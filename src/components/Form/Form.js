@@ -7,6 +7,8 @@ const Form = () => {
     const [street, setStreet] = useState('');
     const [subject, setSubject] = useState('physical');
     const {tg} = useTelegram();
+    
+    const [errLog, setErrLog] = useState('')
 
     const onSendData = useCallback(() => {
         const data = {
@@ -14,11 +16,13 @@ const Form = () => {
             street,
             subject
         }
+        setErrLog(JSON.stringify(data))
         tg.sendData(JSON.stringify(data));
     }, [country, street, subject])
 
     useEffect(() => {
         tg.onEvent('mainButtonClicked', onSendData)
+        // setErrLog(JSON.stringify(country))
         return () => {
             tg.offEvent('mainButtonClicked', onSendData)
         }
@@ -53,6 +57,7 @@ const Form = () => {
     return (
         <div className={"form"}>
             <h3>Введите ваши данные</h3>
+            <p>Log: {errLog}</p>
             <input
                 className={'input'}
                 type="text"
