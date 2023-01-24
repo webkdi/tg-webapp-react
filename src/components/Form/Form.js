@@ -1,83 +1,82 @@
-import React, {useCallback, useEffect, useState} from 'react';
-import './Form.css';
-import {useTelegram} from "../../hooks/useTelegram";
+import React, { useCallback, useEffect, useState } from "react";
+import "./Form.css";
+import { useTelegram } from "../../hooks/useTelegram";
 
 const Form = () => {
-    const [country, setCountry] = useState('');
-    const [street, setStreet] = useState('');
-    const [subject, setSubject] = useState('physical');
-    const {tg} = useTelegram();
-    
-    const [errLog, setErrLog] = useState('')
+  const [country, setCountry] = useState("");
+  const [street, setStreet] = useState("");
+  const [subject, setSubject] = useState("physical");
+  const { tg } = useTelegram();
 
-    const onSendData = useCallback(() => {
-        const data = {
-            country,
-            street,
-            subject
-        }
-        setErrLog(JSON.stringify(data))
-        tg.sendData(JSON.stringify(data));
-    }, [country, street, subject])
+  const [errLog, setErrLog] = useState("");
 
-    useEffect(() => {
-        tg.onEvent('mainButtonClicked', onSendData)
-        // setErrLog(JSON.stringify(country))
-        return () => {
-            tg.offEvent('mainButtonClicked', onSendData)
-        }
-    }, [onSendData])
+  const onSendData = useCallback(() => {
+    const data = {
+      country,
+      street,
+      subject,
+    };
+    setErrLog(JSON.stringify(data));
+    tg.sendData(JSON.stringify(data));
+  }, [country, street, subject]);
 
-    useEffect(() => {
-        tg.MainButton.setParams({
-            text: 'Отправить данные'
-        })
-    }, [])
+  useEffect(() => {
+    tg.onEvent("mainButtonClicked", onSendData);
+    return () => {
+      tg.offEvent("mainButtonClicked", onSendData);
+    };
+  }, [onSendData]);
 
-    useEffect(() => {
-        if(!street || !country) {
-            tg.MainButton.hide();
-        } else {
-            tg.MainButton.show();
-        }
-    }, [country, street])
+  useEffect(() => {
+    tg.MainButton.setParams({
+      text: "Отправить данные",
+    });
+  }, []);
 
-    const onChangeCountry = (e) => {
-        setCountry(e.target.value)
+  useEffect(() => {
+    if (!street || !country) {
+      tg.MainButton.hide();
+    } else {
+      tg.MainButton.show();
     }
+  }, [country, street]);
 
-    const onChangeStreet = (e) => {
-        setStreet(e.target.value)
-    }
+  const onChangeCountry = (e) => {
+    setCountry(e.target.value);
+  };
 
-    const onChangeSubject = (e) => {
-        setSubject(e.target.value)
-    }
+  const onChangeStreet = (e) => {
+    setStreet(e.target.value);
+  };
 
-    return (
-        <div className={"form"}>
-            <h3>Введите ваши данные</h3>
-            <p>Log: {errLog}</p>
-            <input
-                className={'input'}
-                type="text"
-                placeholder={'Страна'}
-                value={country}
-                onChange={onChangeCountry}
-            />
-            <input
-                className={'input'}
-                type="text"
-                placeholder={'Улица'}
-                value={street}
-                onChange={onChangeStreet}
-            />
-            <select value={subject} onChange={onChangeSubject} className={'select'}>
-                <option value={'physical'}>Физ. лицо</option>
-                <option value={'legal'}>Юр. лицо</option>
-            </select>
-        </div>
-    );
+  const onChangeSubject = (e) => {
+    setSubject(e.target.value);
+  };
+
+  return (
+    <div className={"form"}>
+      <h3>Введите ваши данные</h3>
+      <p>Log: {errLog}</p>
+      <input
+        className={"input"}
+        type="text"
+        placeholder={"Страна"}
+        value={country}
+        onChange={onChangeCountry}
+      />
+      <input
+        className={"input"}
+        type="text"
+        placeholder={"Улица"}
+        value={street}
+        onChange={onChangeStreet}
+      />
+      <select value={subject} onChange={onChangeSubject} className={"select"}>
+        <option value={"physical"}>Физ. лицо</option>
+        <option value={"legal"}>Юр. лицо</option>
+      </select>
+    </div>
+  );
 };
 
 export default Form;
