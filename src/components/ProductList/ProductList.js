@@ -1,7 +1,8 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState } from "react";
 import "./ProductList.css";
 import ProductItem from "../ProductItem/ProductItem";
 import { useTelegram } from "../../hooks/useTelegram";
+import { useCallback, useEffect } from "react";
 
 const products = [
   {
@@ -61,16 +62,14 @@ const getTotalPrice = (items = []) => {
 };
 
 const ProductList = () => {
-
-  //Корзина
   const [addedItems, setAddedItems] = useState([]);
-  const {tg} = useTelegram();
+  const { tg, queryId } = useTelegram();
 
   const onSendData = useCallback(() => {
     const data = {
       products: addedItems,
       totalPrice: getTotalPrice(addedItems),
-      queryId, 
+      queryId,
     };
     fetch("http://194.67.105.122:8000/web-data", {
       method: "POST",
@@ -79,7 +78,7 @@ const ProductList = () => {
       },
       body: JSON.stringify(data),
     });
-  }, []);
+  }, [addedItems]);
 
   useEffect(() => {
     tg.onEvent("mainButtonClicked", onSendData);
@@ -88,10 +87,7 @@ const ProductList = () => {
     };
   }, [onSendData]);
 
-
-
   const onAdd = (product) => {
-
     const alreadyAdded = addedItems.find((item) => item.id === product.id);
     let newItems = [];
 
@@ -111,9 +107,7 @@ const ProductList = () => {
         text: `Купить ${getTotalPrice(newItems)}`,
       });
     }
-
-  }
-
+  };
 
   return (
     <div className={"list"}>
